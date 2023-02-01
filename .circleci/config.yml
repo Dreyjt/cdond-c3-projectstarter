@@ -122,7 +122,7 @@ jobs:
       - checkout
       # Restore from cache
       # Your job code here
-       - restore_cache:
+      - restore_cache:
           keys: [scanfrontend-test]
       - run:
           name: scan-frontend
@@ -145,7 +145,7 @@ jobs:
       - checkout
       # Restore from cache
       # Your job code here
-       - restore_cache:
+      - restore_cache:
           keys: [scanbackend-test]
       - run:
           name: scan-backend
