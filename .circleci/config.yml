@@ -244,8 +244,8 @@ jobs:
       # Docker image here that supports Ansible
       - image: cimg/base:stable
     steps:
-      - Checkout
-      - Add_ssh_keys:
+      - checkout
+      - add_ssh_keys:
           fingerprints:
             - "45:b1:0e:26:1b:2b:51:96:ea:5f:fe:21:bd:19:53:22"
       - attach_workspace:
@@ -260,7 +260,6 @@ jobs:
             cat inventory.txt
 
             ansible-playbook -i inventory.txt configure-server.yml
-        # Here's where you will add some code to rollback on failure
       - destroy-environment
       
   run-migrations:
@@ -268,7 +267,7 @@ jobs:
       # Docker image here that supports NodeJS
       - image: circleci/node:13.8.0
     steps:
-      - Checkout
+      - checkout
       - run:
           name: Run migrations
           command: |
