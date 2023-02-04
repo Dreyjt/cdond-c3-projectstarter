@@ -3,7 +3,7 @@ version: 2.1
 commands:
     install_ansible:
       description: Install Ansible
-      stepss:
+      steps:
         - run:
             name: Install ansible
             command: |
