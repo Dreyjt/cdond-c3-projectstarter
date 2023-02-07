@@ -240,26 +240,41 @@ jobs:
 
   configure-infrastructure:
     docker:
-      # Docker image here that supports Ansible
-      - image: cimg/base:stable
+      - image: python:3.10-alpine3.16
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints:
-            - "45:b1:0e:26:1b:2b:51:96:ea:5f:fe:21:bd:19:53:22"
+          fingerprints: ["45:b1:0e:26:1b:2b:51:96:ea:5f:fe:21:bd:19:53:22"]
       - attach_workspace:
           at: ~/
-
-      - install_ansible
-
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip ansible aws-cli
       - run:
           name: Configure server
           command: |
+            # add environment variables to server
+            echo ENVIRONMENT=production > backend/.env
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> backend/.env
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> backend/.env
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> backend/.env
+            echo TYPEORM_HOST=$TYPEORM_HOST >> backend/.env
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> backend/.env
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> backend/.env
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> backend/.env
+            echo TYPEORM_PORT=$TYPEORM_PORT >> backend/.env
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
+            cat backend/.env
             cd .circleci/ansible
-            cat inventory.txt
-
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy-environment
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend/.env
+
+      - destroy-environment:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7} 
       
   run-migrations:
     docker:
@@ -278,7 +293,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-            curl --insecure https://kvdb.io//migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
+            curl --insecure https://kvdb.io/226ShAkA4GWE59cBZH4Vwkq7/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
       - destroy-environment
       - revert-migrations
     # Here's where you will add some code to rollback on failure      
