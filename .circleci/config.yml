@@ -272,9 +272,7 @@ jobs:
           root: ~/
           paths:
             - project/backend/.env
-
-      - destroy-environment:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7} 
+ 
       
   run-migrations:
     docker:
