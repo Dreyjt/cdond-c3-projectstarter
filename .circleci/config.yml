@@ -45,12 +45,12 @@ commands:
             # Add when this will run
             when: on_fail 
             command: |
-              SUCCESS=$(curl --insecure "https://kvdb.io/226ShAkA4GWE59cBZH4Vwkq7/migration <<parameters.workflow_id>>")
+              SUCCESS=$(curl --insecure https://kvdb.io/226ShAkA4GWE59cBZH4Vwkq7/migration_<< parameters.workflow_id >>)
               if(( $SUCCESS == 1 )); 
               then
                 cd ~/project/backend
                 npm install
-                npm run migrations:revert
+                npm run migration:revert
               fi
             
 jobs:
