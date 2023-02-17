@@ -286,66 +286,66 @@ jobs:
       - revert-migrations
     # Here's where you will add some code to rollback on failure      
 
-#   deploy-frontend:
-#     docker:
-#       - image: python:3.10-alpine3.16
-#     steps:
-#       - checkout
-#       - run:
-#           name: Install dependencies
-#           command: |
-#              apk add --update --no-cache tar gzip nodejs npm aws-cli curl
-#       - run:
-#           name: Get backend url
-#           command: |
-#             export BACKEND_IP=$(aws ec2 describe-instances \
-#             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-#             --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
-#             --output text)
-#             export API_URL="http://${BACKEND_IP}:3030"
-#             echo "API_URL = ${API_URL}"
-#             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-#             cat frontend/.env
-#       - run:
-#           name: Deploy frontend objects
-#           command: |
-#             cd frontend
-#             npm install
-#             npm run build
-#             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-#             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-#       - destroy-environment
-#       - revert-migrations
-#       # Here's where you will add some code to rollback on failure      
+  deploy-frontend:
+    docker:
+      - image: python:3.10-alpine3.16
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+             apk add --update --no-cache tar gzip nodejs npm aws-cli curl
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+            --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy-environment
+      - revert-migrations
+      # Here's where you will add some code to rollback on failure      
                     
-#   deploy-backend:
-#     docker:
-#       - image: python:3.10-alpine3.16
-#     steps:
-#       - checkout
-#       - add_ssh_keys:
-#           fingerprints: ["45:b1:0e:26:1b:2b:51:96:ea:5f:fe:21:bd:19:53:22"]
-#       - attach_workspace:
-#           at: ~/
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             apk add --update --no-cache tar gzip nodejs npm aws-cli curl ansible
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             cd backend
-#             npm i
-#             npm run build
-#             cd ..
-#             tar -C backend -czvf artifact.tar.gz .
-#             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-#             mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
-#             cd .circleci/ansible
-#             echo "Contents  of the inventory.txt file is -------"
-#             cat inventory.txt
-#             ansible-playbook -i inventory.txt deploy-backend.yml
-#       # Here's where you will add some code to rollback on failure  
+  deploy-backend:
+    docker:
+      - image: python:3.10-alpine3.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["45:b1:0e:26:1b:2b:51:96:ea:5f:fe:21:bd:19:53:22"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip nodejs npm aws-cli curl ansible
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      # Here's where you will add some code to rollback on failure  
 
 #   smoke-test:
 #     docker:
@@ -462,10 +462,10 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-#       - deploy-frontend:
-#           requires: [run-migrations]
-#       - deploy-backend:
-#           requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
 #       - smoke-test:
 #           requires: [deploy-backend, deploy-frontend]
 #       - cloudfront-update:
