@@ -1,0 +1,6 @@
+URLs for project 3
+
+Cloudfront: dnhz6rckx4ofh.cloudfront.net
+S3: http://udapeople-c39bd8f.s3-website-us-east-1.amazonaws.com
+Github: https://github.com/Dreyjt/cdond-c3-projectstarter.git
+backend status URL: http://54.90.52.168:3030/api/status
