@@ -405,7 +405,7 @@ jobs:
             --tags project=udapeople
       - destroy-environment
       - revert-migrations
-      # Here's where you will add some code to rollback on failure  
+      # Here's where you will add some code too rollback on failure  
 
   cleanup:
       docker:
